@@ -28,7 +28,14 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 shrink-0" />
-                <span>משק כהנוב</span>
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Ram+On+Israel+1920500"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="cursor-pointer underline text-[var(--color-gold)] hover:text-white transition-colors"
+                >
+                  משק כהנוב, מושב רם-און, 1920500
+                </a>
               </li>
             </ul>
           </div>
