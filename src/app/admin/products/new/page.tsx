@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth/admin";
 import { getAllCategories } from "@/lib/data/store";
