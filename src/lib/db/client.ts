@@ -11,6 +11,8 @@ function getSql() {
   return _sql;
 }
 
-export const sql: ReturnType<typeof neon> = ((strings: TemplateStringsArray, ...values: unknown[]) => {
-  return getSql()(strings, ...values);
-}) as ReturnType<typeof neon>;
+type Sql = (strings: TemplateStringsArray, ...values: unknown[]) => Promise<Record<string, any>[]>;
+
+export const sql: Sql = (strings, ...values) => {
+  return getSql()(strings, ...values) as Promise<Record<string, any>[]>;
+};
