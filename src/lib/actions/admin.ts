@@ -1,0 +1,129 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { loginAdmin, logoutAdmin, requireAdmin } from "@/lib/auth/admin";
+import {
+  updateProduct,
+  deleteProduct,
+  addProduct,
+  getAllCategories,
+} from "@/lib/data/store";
+
+// --- Auth actions ---
+
+export async function loginAction(
+  _prevState: { error: string },
+  formData: FormData
+): Promise<{ error: string }> {
+  const password = formData.get("password") as string;
+  const success = await loginAdmin(password);
+  if (!success) return { error: "סיסמה שגויה" };
+  redirect("/admin");
+}
+
+export async function logoutAction(): Promise<void> {
+  await logoutAdmin();
+  redirect("/admin/login");
+}
+
+// --- Product actions ---
+
+export async function updateProductAction(
+  formData: FormData
+): Promise<{ error?: string }> {
+  await requireAdmin();
+
+  const id = formData.get("id") as string;
+  const name = formData.get("name") as string;
+  const slug = formData.get("slug") as string;
+  const price = parseFloat(formData.get("price") as string);
+  const salePrice = formData.get("salePrice")
+    ? parseFloat(formData.get("salePrice") as string)
+    : undefined;
+  const categoryId = formData.get("categoryId") as string;
+  const weightUnit = formData.get("weightUnit") as "kg" | "unit";
+  const inStock = formData.get("inStock") === "on";
+  const featured = formData.get("featured") === "on";
+  const description = (formData.get("description") as string) || undefined;
+  const imageUrl = (formData.get("imageUrl") as string) || undefined;
+
+  const result = updateProduct(id, {
+    name,
+    slug,
+    price,
+    salePrice,
+    categoryId,
+    weightUnit,
+    inStock,
+    featured,
+    description,
+    imageUrl,
+  });
+
+  if (!result) return { error: "מוצר לא נמצא" };
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  redirect("/admin");
+}
+
+export async function deleteProductAction(id: string): Promise<void> {
+  await requireAdmin();
+  deleteProduct(id);
+  revalidatePath("/");
+  revalidatePath("/admin");
+}
+
+export async function toggleProductFieldAction(
+  id: string,
+  field: "inStock" | "featured",
+  value: boolean
+): Promise<void> {
+  await requireAdmin();
+  updateProduct(id, { [field]: value });
+  revalidatePath("/");
+  revalidatePath("/admin");
+}
+
+export async function addProductAction(
+  formData: FormData
+): Promise<{ error?: string }> {
+  await requireAdmin();
+
+  const name = formData.get("name") as string;
+  const slug = formData.get("slug") as string;
+  const price = parseFloat(formData.get("price") as string);
+  const salePrice = formData.get("salePrice")
+    ? parseFloat(formData.get("salePrice") as string)
+    : undefined;
+  const categoryId = formData.get("categoryId") as string;
+  const weightUnit = formData.get("weightUnit") as "kg" | "unit";
+  const inStock = formData.get("inStock") === "on";
+  const featured = formData.get("featured") === "on";
+  const description = (formData.get("description") as string) || undefined;
+  const imageUrl = (formData.get("imageUrl") as string) || undefined;
+
+  // Validate category
+  const categories = getAllCategories();
+  if (!categories.find((c) => c._id === categoryId)) {
+    return { error: "קטגוריה לא תקינה" };
+  }
+
+  addProduct({
+    name,
+    slug,
+    price,
+    salePrice,
+    categoryId,
+    weightUnit,
+    inStock,
+    featured,
+    description,
+    imageUrl,
+  });
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  redirect("/admin");
+}

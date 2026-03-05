@@ -1,0 +1,32 @@
+{
+  "categories": [
+    { "_id": "cat-cooking", "name": "בישול ומעשנה", "slug": "cooking", "order": 1 },
+    { "_id": "cat-grill", "name": "מנגל", "slug": "grill", "order": 2 }
+  ],
+  "products": [
+    { "_id": "p1", "name": "אוסובוקו", "slug": "ossobuco", "categoryId": "cat-cooking", "price": 68, "weightUnit": "kg", "inStock": true, "featured": false, "imageUrl": "/uploads/products/ossobuco.png" },
+    { "_id": "p2", "name": "שורט ריבס", "slug": "short-ribs", "categoryId": "cat-cooking", "price": 79, "weightUnit": "kg", "inStock": true, "featured": true, "imageUrl": "/uploads/products/short-ribs.png" },
+    { "_id": "p3", "name": "כתף מס' 4", "slug": "shoulder-4", "categoryId": "cat-cooking", "price": 74, "weightUnit": "kg", "inStock": true, "featured": false, "imageUrl": "/uploads/products/shoulder-4.png" },
+    { "_id": "p4", "name": "כתף מס' 5", "slug": "shoulder-5", "categoryId": "cat-cooking", "price": 95, "weightUnit": "kg", "inStock": true, "featured": false, "imageUrl": "/uploads/products/shoulder-5.png" },
+    { "_id": "p5", "name": "גולאש", "slug": "goulash", "categoryId": "cat-cooking", "price": 74, "weightUnit": "kg", "inStock": true, "featured": false, "imageUrl": "/uploads/products/goulash.png" },
+    { "_id": "p6", "name": "בריסקט", "slug": "brisket", "categoryId": "cat-cooking", "price": 79, "weightUnit": "kg", "inStock": true, "featured": true, "imageUrl": "/uploads/products/brisket.png" },
+    { "_id": "p7", "name": "שייטל/שפיץ", "slug": "shaytel-shpitz", "categoryId": "cat-cooking", "price": 105, "weightUnit": "kg", "inStock": true, "featured": false, "imageUrl": "/uploads/products/shaytel-shpitz.png" },
+    { "_id": "p8", "name": "פיקניה", "slug": "picanha", "categoryId": "cat-cooking", "price": 119, "weightUnit": "kg", "inStock": true, "featured": false, "imageUrl": "/uploads/products/picanha.png" },
+    { "_id": "p9", "name": "בשר טחון", "slug": "ground-meat", "categoryId": "cat-cooking", "price": 68, "weightUnit": "kg", "inStock": true, "featured": false, "imageUrl": "/uploads/products/ground-meat.png" },
+    { "_id": "p10", "name": "ואסיו", "slug": "vasio", "categoryId": "cat-cooking", "price": 95, "weightUnit": "kg", "inStock": true, "featured": false, "imageUrl": "/uploads/products/vasio.png" },
+    { "_id": "p11", "name": "קוביות אסדו", "slug": "asado-cubes", "categoryId": "cat-cooking", "price": 74, "weightUnit": "kg", "inStock": true, "featured": false, "imageUrl": "/uploads/products/asado-cubes.png" },
+    { "_id": "p12", "name": "אונטריב", "slug": "untreib", "categoryId": "cat-cooking", "price": 95, "weightUnit": "kg", "inStock": true, "featured": false, "imageUrl": "/uploads/products/untreib.png" },
+    { "_id": "p13", "name": "המבורגר 100% בופאלו", "slug": "hamburger-buffalo", "categoryId": "cat-grill", "price": 78, "weightUnit": "kg", "inStock": true, "featured": true, "imageUrl": "/uploads/products/hamburger-buffalo.png" },
+    { "_id": "p14", "name": "טי-בון", "slug": "t-bone", "categoryId": "cat-grill", "price": 145, "weightUnit": "kg", "inStock": true, "featured": true, "imageUrl": "/uploads/products/t-bone.png" },
+    { "_id": "p15", "name": "סינטה עם עצם", "slug": "sirloin-bone-in", "categoryId": "cat-grill", "price": 137, "weightUnit": "kg", "inStock": true, "featured": false, "imageUrl": "/uploads/products/sirloin-bone-in.png" },
+    { "_id": "p16", "name": "מינוט סטייק סינטה", "slug": "minute-steak-sirloin", "categoryId": "cat-grill", "price": 175, "weightUnit": "kg", "inStock": true, "featured": false, "imageUrl": "/uploads/products/minute-steak-sirloin.png" },
+    { "_id": "p17", "name": "אנטריקוט עם עצם", "slug": "ribeye-bone-in", "categoryId": "cat-grill", "price": 145, "weightUnit": "kg", "inStock": true, "featured": false, "imageUrl": "/uploads/products/ribeye-bone-in.png" },
+    { "_id": "p18", "name": "אנטריקוט ללא עצם", "slug": "ribeye-boneless", "categoryId": "cat-grill", "price": 185, "weightUnit": "kg", "inStock": true, "featured": true, "imageUrl": "/uploads/products/ribeye-boneless.png" },
+    { "_id": "p19", "name": "נקניקיות מרגז", "slug": "merguez-sausages", "categoryId": "cat-grill", "price": 85, "weightUnit": "kg", "inStock": true, "featured": false, "imageUrl": "/uploads/products/merguez-sausages.png" },
+    { "_id": "p20", "name": "נקניקיות צ'וריסו", "slug": "chorizo-sausages", "categoryId": "cat-grill", "price": 85, "weightUnit": "kg", "inStock": true, "featured": false, "imageUrl": "/uploads/products/chorizo-sausages.png" },
+    { "_id": "p21", "name": "נקניקיות עשבי תיבול", "slug": "herb-sausages", "categoryId": "cat-grill", "price": 85, "weightUnit": "kg", "inStock": true, "featured": false, "imageUrl": "/uploads/products/herb-sausages.png" },
+    { "_id": "p22", "name": "פילה", "slug": "fillet", "categoryId": "cat-grill", "price": 220, "weightUnit": "kg", "inStock": true, "featured": true, "imageUrl": "/uploads/products/fillet.png" },
+    { "_id": "p23", "name": "סינטה", "slug": "sirloin", "categoryId": "cat-grill", "price": 175, "weightUnit": "kg", "inStock": true, "featured": false, "imageUrl": "/uploads/products/sirloin.png" },
+    { "_id": "p24", "name": "דנוור", "slug": "denver", "categoryId": "cat-grill", "price": 110, "weightUnit": "kg", "inStock": true, "featured": false, "imageUrl": "/uploads/products/denver.png" }
+  ]
+}
