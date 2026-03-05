@@ -48,7 +48,7 @@ export async function updateProductAction(
   const description = (formData.get("description") as string) || undefined;
   const imageUrl = (formData.get("imageUrl") as string) || undefined;
 
-  const result = updateProduct(id, {
+  const result = await updateProduct(id, {
     name,
     slug,
     price,
@@ -70,7 +70,7 @@ export async function updateProductAction(
 
 export async function deleteProductAction(id: string): Promise<void> {
   await requireAdmin();
-  deleteProduct(id);
+  await deleteProduct(id);
   revalidatePath("/");
   revalidatePath("/admin");
 }
@@ -81,7 +81,7 @@ export async function toggleProductFieldAction(
   value: boolean
 ): Promise<void> {
   await requireAdmin();
-  updateProduct(id, { [field]: value });
+  await updateProduct(id, { [field]: value });
   revalidatePath("/");
   revalidatePath("/admin");
 }
@@ -105,12 +105,12 @@ export async function addProductAction(
   const imageUrl = (formData.get("imageUrl") as string) || undefined;
 
   // Validate category
-  const categories = getAllCategories();
+  const categories = await getAllCategories();
   if (!categories.find((c) => c._id === categoryId)) {
     return { error: "קטגוריה לא תקינה" };
   }
 
-  addProduct({
+  await addProduct({
     name,
     slug,
     price,

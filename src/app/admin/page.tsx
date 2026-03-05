@@ -7,7 +7,7 @@ import ProductTable from "@/components/admin/ProductTable";
 
 export default async function AdminDashboardPage() {
   await requireAdmin();
-  const products = getAllProducts();
+  const products = await getAllProducts();
 
   return (
     <div className="mx-auto max-w-6xl p-6">

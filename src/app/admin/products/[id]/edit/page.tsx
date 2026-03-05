@@ -12,10 +12,10 @@ export default async function EditProductPage({
 }) {
   await requireAdmin();
   const { id } = await params;
-  const product = getProductById(id);
+  const product = await getProductById(id);
   if (!product) notFound();
 
-  const categories = getAllCategories();
+  const categories = await getAllCategories();
 
   return (
     <div className="mx-auto max-w-2xl p-6">

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Phone, MapPin, Clock } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
@@ -52,9 +53,13 @@ export default function Footer() {
 
         <Separator className="my-8 bg-white/10" />
 
-        <p className="text-center text-xs text-white/40">
-          © {new Date().getFullYear()} בופלו כהנוב. כל הזכויות שמורות.
-        </p>
+        <div className="flex items-center justify-center gap-3 text-xs text-white/40">
+          <p>© {new Date().getFullYear()} בופלו כהנוב. כל הזכויות שמורות.</p>
+          <span>|</span>
+          <Link href="/terms" className="hover:text-white transition-colors">
+            תקנון
+          </Link>
+        </div>
       </div>
     </footer>
   );

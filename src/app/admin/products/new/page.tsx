@@ -6,7 +6,7 @@ import ProductForm from "@/components/admin/ProductForm";
 
 export default async function NewProductPage() {
   await requireAdmin();
-  const categories = getAllCategories();
+  const categories = await getAllCategories();
 
   return (
     <div className="mx-auto max-w-2xl p-6">

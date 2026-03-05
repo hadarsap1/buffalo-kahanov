@@ -8,7 +8,7 @@ import {
 } from "@/lib/data/store";
 
 export async function getCategories(): Promise<Category[]> {
-  if (!client) return getAllCategories();
+  if (!client) return await getAllCategories();
   return client.fetch(
     `*[_type == "category"] | order(order asc) {
       _id,
@@ -20,7 +20,7 @@ export async function getCategories(): Promise<Category[]> {
 }
 
 export async function getProducts(): Promise<Product[]> {
-  if (!client) return getAllProducts();
+  if (!client) return await getAllProducts();
   return client.fetch(
     `*[_type == "product"] | order(name asc) {
       _id,
@@ -39,7 +39,7 @@ export async function getProducts(): Promise<Product[]> {
 }
 
 export async function getFeaturedProducts(): Promise<Product[]> {
-  if (!client) return storeFeatured();
+  if (!client) return await storeFeatured();
   return client.fetch(
     `*[_type == "product" && featured == true && inStock == true] | order(name asc) {
       _id,
@@ -60,7 +60,7 @@ export async function getFeaturedProducts(): Promise<Product[]> {
 export async function getProductsByCategory(
   categorySlug: string
 ): Promise<Product[]> {
-  if (!client) return storeByCategory(categorySlug);
+  if (!client) return await storeByCategory(categorySlug);
   return client.fetch(
     `*[_type == "product" && category->slug.current == $categorySlug] | order(name asc) {
       _id,
