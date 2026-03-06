@@ -11,8 +11,8 @@ export default async function FeaturedProducts() {
     <section className="bg-white/[0.02] py-20">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mb-10 text-center">
-          <h2 className="mb-2 text-3xl font-bold">מוצרים מומלצים</h2>
-          <Separator className="mx-auto mb-4 w-16 bg-[var(--color-maroon)]" />
+          <h2 className="mb-2 text-3xl font-extrabold sm:text-4xl">מוצרים מומלצים</h2>
+          <Separator className="mx-auto mb-4 w-16 bg-[var(--color-gold)]" />
           <p className="text-white/50">הבחירות המובחרות שלנו במיוחד בשבילכם</p>
         </div>
 

@@ -27,11 +27,11 @@ export default function CategoryFilter({
     <div className="flex flex-wrap justify-center gap-2">
       <Button
         size="sm"
-        variant={active === "" ? "default" : "outline"}
+        variant={active === "" ? "default" : "ghost"}
         className={
           active === ""
-            ? "bg-[var(--color-maroon)] text-white hover:bg-[var(--color-maroon)]/90"
-            : "border-white/20 text-white/60 hover:bg-white/5"
+            ? "bg-transparent text-[var(--color-gold)] border-b-2 border-[var(--color-gold)] rounded-none hover:bg-white/5 transition-all duration-200"
+            : "text-white/60 hover:text-white hover:bg-white/5 rounded-none transition-all duration-200"
         }
         onClick={() => select("")}
       >
@@ -41,11 +41,11 @@ export default function CategoryFilter({
         <Button
           key={cat._id}
           size="sm"
-          variant={active === cat.slug ? "default" : "outline"}
+          variant={active === cat.slug ? "default" : "ghost"}
           className={
             active === cat.slug
-              ? "bg-[var(--color-maroon)] text-white hover:bg-[var(--color-maroon)]/90"
-              : "border-white/20 text-white/60 hover:bg-white/5"
+              ? "bg-transparent text-[var(--color-gold)] border-b-2 border-[var(--color-gold)] rounded-none hover:bg-white/5 transition-all duration-200"
+              : "text-white/60 hover:text-white hover:bg-white/5 rounded-none transition-all duration-200"
           }
           onClick={() => select(cat.slug)}
         >

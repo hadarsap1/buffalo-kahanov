@@ -4,12 +4,16 @@ import type { CartItem } from "@/types";
 
 interface CartStore {
   items: CartItem[];
+  selectedDeliveryZoneId: string | null;
+  deliveryFee: number;
   addItem: (item: Omit<CartItem, "quantity">) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
+  setDeliveryZone: (id: string | null, fee: number) => void;
   totalItems: () => number;
   totalPrice: () => number;
+  grandTotal: () => number;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -45,7 +49,14 @@ export const useCartStore = create<CartStore>()(
                 ),
         })),
 
-      clearCart: () => set({ items: [] }),
+      clearCart: () =>
+        set({ items: [], selectedDeliveryZoneId: null, deliveryFee: 0 }),
+
+      selectedDeliveryZoneId: null,
+      deliveryFee: 0,
+
+      setDeliveryZone: (id, fee) =>
+        set({ selectedDeliveryZoneId: id, deliveryFee: fee }),
 
       totalItems: () =>
         get().items.reduce((sum, item) => sum + item.quantity, 0),
@@ -56,6 +67,8 @@ export const useCartStore = create<CartStore>()(
             sum + (item.salePrice ?? item.price) * item.quantity,
           0
         ),
+
+      grandTotal: () => get().totalPrice() + get().deliveryFee,
     }),
     { name: "buffalo-kahanov-cart" }
   )

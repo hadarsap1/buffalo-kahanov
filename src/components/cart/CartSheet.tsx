@@ -3,19 +3,23 @@
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/lib/store/cart";
 import Link from "next/link";
 
 export default function CartSheet({ children }: { children: React.ReactNode }) {
-  const { items, removeItem, updateQuantity, totalPrice } = useCartStore();
+  const { items, removeItem, updateQuantity, totalPrice, selectedDeliveryZoneId, deliveryFee, grandTotal } = useCartStore();
 
   return (
     <Sheet>
       <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent side="left" className="flex w-80 flex-col bg-[var(--color-surface)] sm:w-96">
-        <SheetHeader>
-          <SheetTitle className="text-right text-[var(--color-gold)]">
+      <SheetContent
+        side="left"
+        className="flex w-80 flex-col bg-[var(--color-surface)] sm:w-96"
+        dir="rtl"
+        showCloseButton={false}
+      >
+        <SheetHeader className="border-b border-white/10 pb-4">
+          <SheetTitle className="text-lg text-[var(--color-gold)]">
             סל הקניות
           </SheetTitle>
         </SheetHeader>
@@ -26,30 +30,27 @@ export default function CartSheet({ children }: { children: React.ReactNode }) {
           </div>
         ) : (
           <>
-            <div className="flex-1 space-y-4 overflow-y-auto py-4">
+            <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
               {items.map((item) => (
                 <div key={item.id} className="rounded-lg bg-white/5 p-3">
-                  <div className="flex items-start justify-between">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 text-white/40 hover:text-red-400"
-                      onClick={() => removeItem(item.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                    <div className="text-right">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1">
                       <p className="text-sm font-medium">{item.name}</p>
                       <p className="text-xs text-white/50">
                         ₪{(item.salePrice ?? item.price).toFixed(2)} /{" "}
                         {item.weightUnit === "kg" ? 'ק"ג' : "יחידה"}
                       </p>
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 shrink-0 text-white/40 hover:text-red-400"
+                      onClick={() => removeItem(item.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                   <div className="mt-2 flex items-center justify-between">
-                    <p className="text-sm font-semibold text-[var(--color-gold)]">
-                      ₪{((item.salePrice ?? item.price) * item.quantity).toFixed(2)}
-                    </p>
                     <div className="flex items-center gap-2">
                       <Button
                         variant="outline"
@@ -69,19 +70,30 @@ export default function CartSheet({ children }: { children: React.ReactNode }) {
                         <Plus className="h-3 w-3" />
                       </Button>
                     </div>
+                    <p className="text-sm font-semibold text-[var(--color-gold)]">
+                      ₪{((item.salePrice ?? item.price) * item.quantity).toFixed(2)}
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
 
-            <Separator className="bg-white/10" />
-
-            <div className="space-y-3 py-4">
-              <div className="flex items-center justify-between text-lg font-bold">
-                <span className="text-[var(--color-gold)]">
-                  ₪{totalPrice().toFixed(2)}
-                </span>
+            <div className="border-t border-white/10 px-4 py-4">
+              <div className="mb-1 flex items-center justify-between text-sm text-white/60">
+                <span>סכום ביניים</span>
+                <span>₪{totalPrice().toFixed(2)}</span>
+              </div>
+              {selectedDeliveryZoneId && (
+                <div className="mb-1 flex items-center justify-between text-sm text-white/60">
+                  <span>משלוח</span>
+                  <span>{deliveryFee === 0 ? "חינם" : `₪${deliveryFee.toFixed(2)}`}</span>
+                </div>
+              )}
+              <div className="mb-3 flex items-center justify-between text-lg font-bold">
                 <span>סה״כ</span>
+                <span className="text-[var(--color-gold)]">
+                  ₪{grandTotal().toFixed(2)}
+                </span>
               </div>
               <Button
                 asChild

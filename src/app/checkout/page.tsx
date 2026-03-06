@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import { Separator } from "@/components/ui/separator";
 import CheckoutForm from "@/components/checkout/CheckoutForm";
+import { getActiveDeliveryZones } from "@/lib/data/store";
 
 export const metadata: Metadata = {
   title: "צ'קאאוט | בופלו כהנוב",
   description: "השלמת הזמנה דרך וואטסאפ",
 };
 
-export default function CheckoutPage() {
+export default async function CheckoutPage() {
+  const deliveryZones = await getActiveDeliveryZones();
+
   return (
     <section className="py-20">
       <div className="mx-auto max-w-2xl px-4">
@@ -19,7 +22,7 @@ export default function CheckoutPage() {
           </p>
         </div>
 
-        <CheckoutForm />
+        <CheckoutForm deliveryZones={deliveryZones} />
       </div>
     </section>
   );

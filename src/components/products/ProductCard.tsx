@@ -20,7 +20,7 @@ export default function ProductCard({ product }: { product: Product }) {
     : product.imageUrl ?? null;
 
   return (
-    <Card className="group overflow-hidden border-white/10 bg-[var(--color-surface)] transition-colors hover:border-[var(--color-gold)]/30">
+    <Card className="group overflow-hidden border-white/10 bg-[var(--color-surface)] transition-all duration-300 hover:border-[var(--color-gold)]/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/20">
       {/* Image */}
       <div className="relative aspect-[4/3] overflow-hidden bg-white/5">
         {imageUrl ? (
@@ -73,7 +73,7 @@ export default function ProductCard({ product }: { product: Product }) {
           <Button
             size="sm"
             disabled={!product.inStock}
-            className="bg-[var(--color-maroon)] text-white hover:bg-[var(--color-maroon)]/90 disabled:opacity-40"
+            className="bg-[var(--color-maroon)] text-white hover:bg-[var(--color-maroon)]/90 disabled:opacity-40 transition-all duration-200 active:scale-95"
             onClick={() =>
               addItem({
                 id: product._id,

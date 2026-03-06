@@ -38,6 +38,14 @@ export interface CartItem {
   imageUrl?: string;
 }
 
+export interface DeliveryZone {
+  _id: string;
+  name: string;
+  price: number;
+  active: boolean;
+  order: number;
+}
+
 export interface CheckoutFormData {
   name: string;
   address: string;

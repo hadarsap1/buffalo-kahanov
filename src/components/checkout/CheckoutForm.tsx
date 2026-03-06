@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { MessageCircle, ShoppingBag, Minus, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,14 +8,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/lib/store/cart";
-import type { CheckoutFormData } from "@/types";
+import type { CheckoutFormData, DeliveryZone } from "@/types";
 
 const WHATSAPP_NUMBER = "972524045744";
 
 function buildWhatsAppMessage(
   form: CheckoutFormData,
   items: { name: string; quantity: number; price: number; salePrice?: number; weightUnit: string }[],
-  total: number
+  subtotal: number,
+  deliveryZoneName: string | null,
+  deliveryFee: number,
+  grandTotal: number
 ) {
   const itemLines = items
     .map(
@@ -24,27 +27,63 @@ function buildWhatsAppMessage(
     )
     .join("\n");
 
+  const deliveryLine = deliveryZoneName
+    ? `\n🚚 משלוח: ${deliveryZoneName} — ₪${deliveryFee.toFixed(2)}`
+    : "";
+
   return encodeURIComponent(
     `🥩 הזמנה חדשה מבופלו כהנוב\n\n` +
       `👤 שם: ${form.name}\n` +
       `📍 כתובת: ${form.address}\n` +
       (form.notes ? `📝 הערות: ${form.notes}\n` : "") +
-      `\n📦 פריטים:\n${itemLines}\n\n` +
-      `💰 סה"כ: ₪${total.toFixed(2)}`
+      `\n📦 פריטים:\n${itemLines}` +
+      deliveryLine +
+      `\n\n💰 סה"כ: ₪${grandTotal.toFixed(2)}`
   );
 }
 
-export default function CheckoutForm() {
+export default function CheckoutForm({
+  deliveryZones,
+}: {
+  deliveryZones: DeliveryZone[];
+}) {
   const router = useRouter();
-  const { items, updateQuantity, removeItem, totalPrice, clearCart } =
-    useCartStore();
+  const {
+    items,
+    updateQuantity,
+    removeItem,
+    totalPrice,
+    clearCart,
+    selectedDeliveryZoneId,
+    deliveryFee,
+    setDeliveryZone,
+    grandTotal,
+  } = useCartStore();
   const [form, setForm] = useState<CheckoutFormData>({
     name: "",
     address: "",
     notes: "",
   });
 
-  const total = totalPrice();
+  const subtotal = totalPrice();
+  const total = grandTotal();
+
+  // Re-sync delivery fee from server data when zones load
+  useEffect(() => {
+    if (selectedDeliveryZoneId) {
+      const zone = deliveryZones.find((z) => z._id === selectedDeliveryZoneId);
+      if (zone) {
+        setDeliveryZone(zone._id, zone.price);
+      } else {
+        // Zone no longer active, reset
+        setDeliveryZone(null, 0);
+      }
+    }
+  }, [deliveryZones, selectedDeliveryZoneId, setDeliveryZone]);
+
+  const selectedZone = deliveryZones.find(
+    (z) => z._id === selectedDeliveryZoneId
+  );
 
   if (items.length === 0) {
     return (
@@ -63,7 +102,14 @@ export default function CheckoutForm() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const message = buildWhatsAppMessage(form, items, total);
+    const message = buildWhatsAppMessage(
+      form,
+      items,
+      subtotal,
+      selectedZone?.name ?? null,
+      deliveryFee,
+      total
+    );
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
     window.open(url, "_blank");
     clearCart();
@@ -126,10 +172,57 @@ export default function CheckoutForm() {
 
         <Separator className="my-4 bg-white/10" />
 
-        <div className="flex items-center justify-between text-lg font-bold">
-          <span>סה&quot;כ</span>
-          <span className="text-[var(--color-gold)]">₪{total.toFixed(2)}</span>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-sm text-white/60">
+            <span>סכום ביניים</span>
+            <span>₪{subtotal.toFixed(2)}</span>
+          </div>
+          {selectedZone && (
+            <div className="flex items-center justify-between text-sm text-white/60">
+              <span>משלוח ({selectedZone.name})</span>
+              <span>{deliveryFee === 0 ? "חינם" : `₪${deliveryFee.toFixed(2)}`}</span>
+            </div>
+          )}
+          <div className="flex items-center justify-between text-lg font-bold">
+            <span>סה&quot;כ</span>
+            <span className="text-[var(--color-gold)]">₪{total.toFixed(2)}</span>
+          </div>
         </div>
+      </div>
+
+      {/* Delivery Zone Selector */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold">אזור משלוח</h2>
+        <div className="space-y-2">
+          {deliveryZones.map((zone) => (
+            <label
+              key={zone._id}
+              className={`flex cursor-pointer items-center justify-between rounded-lg border p-3 transition-colors ${
+                selectedDeliveryZoneId === zone._id
+                  ? "border-[var(--color-gold)] bg-[var(--color-gold)]/10"
+                  : "border-white/10 bg-[var(--color-surface)] hover:border-white/20"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <input
+                  type="radio"
+                  name="deliveryZone"
+                  value={zone._id}
+                  checked={selectedDeliveryZoneId === zone._id}
+                  onChange={() => setDeliveryZone(zone._id, zone.price)}
+                  className="accent-[var(--color-gold)]"
+                />
+                <span className="text-sm font-medium">{zone.name}</span>
+              </div>
+              <span className="text-sm text-white/60">
+                {zone.price === 0 ? "חינם" : `₪${zone.price.toFixed(2)}`}
+              </span>
+            </label>
+          ))}
+        </div>
+        {!selectedDeliveryZoneId && (
+          <p className="text-xs text-red-400/80">יש לבחור אזור משלוח</p>
+        )}
       </div>
 
       {/* Customer Details */}
@@ -183,7 +276,8 @@ export default function CheckoutForm() {
       <Button
         type="submit"
         size="lg"
-        className="w-full gap-2 bg-green-600 text-lg font-bold text-white hover:bg-green-700"
+        disabled={!selectedDeliveryZoneId}
+        className="w-full gap-2 bg-green-600 text-lg font-bold text-white hover:bg-green-700 disabled:opacity-50"
       >
         <MessageCircle className="h-5 w-5" />
         שלח הזמנה בוואטסאפ

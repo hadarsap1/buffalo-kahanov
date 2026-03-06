@@ -44,6 +44,16 @@ async function createSchema() {
 
   await sql`CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_products_featured ON products(featured, in_stock)`;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS delivery_zones (
+      id      TEXT PRIMARY KEY,
+      name    TEXT NOT NULL,
+      price   NUMERIC(10,2) NOT NULL,
+      active  BOOLEAN NOT NULL DEFAULT true,
+      "order" INTEGER NOT NULL DEFAULT 0
+    )
+  `;
 }
 
 // ---------- Data ----------
@@ -80,6 +90,14 @@ const products = [
   { id: "p24", name: "עצמות מוח", slug: "marrow-bones", description: "לצלייה או למרק", categoryId: "cat-cooking", price: 39.9, weightUnit: "kg", inStock: true, featured: false },
 ];
 
+const deliveryZones = [
+  { id: "dz-pickup", name: "איסוף עצמי", price: 0, order: 0 },
+  { id: "dz-1", name: "תל אביב והמרכז", price: 30, order: 1 },
+  { id: "dz-2", name: "השרון והשפלה", price: 40, order: 2 },
+  { id: "dz-3", name: "צפון", price: 50, order: 3 },
+  { id: "dz-4", name: "דרום", price: 50, order: 4 },
+];
+
 // ---------- Seed ----------
 
 async function seed() {
@@ -107,7 +125,16 @@ async function seed() {
     `;
   }
 
-  console.log(`Done! Seeded ${categories.length} categories and ${products.length} products.`);
+  console.log("Seeding delivery zones...");
+  for (const dz of deliveryZones) {
+    await sql`
+      INSERT INTO delivery_zones (id, name, price, active, "order")
+      VALUES (${dz.id}, ${dz.name}, ${dz.price}, ${true}, ${dz.order})
+      ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, price = EXCLUDED.price, "order" = EXCLUDED."order"
+    `;
+  }
+
+  console.log(`Done! Seeded ${categories.length} categories, ${products.length} products, and ${deliveryZones.length} delivery zones.`);
 }
 
 seed().catch((err) => {

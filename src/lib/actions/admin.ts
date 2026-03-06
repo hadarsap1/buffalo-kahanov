@@ -8,6 +8,9 @@ import {
   deleteProduct,
   addProduct,
   getAllCategories,
+  addDeliveryZone,
+  updateDeliveryZone,
+  deleteDeliveryZone,
 } from "@/lib/data/store";
 
 // --- Auth actions ---
@@ -82,6 +85,59 @@ export async function toggleProductFieldAction(
 ): Promise<void> {
   await requireAdmin();
   await updateProduct(id, { [field]: value });
+  revalidatePath("/");
+  revalidatePath("/admin");
+}
+
+// --- Delivery Zone actions ---
+
+export async function addDeliveryZoneAction(
+  formData: FormData
+): Promise<{ error?: string }> {
+  await requireAdmin();
+
+  const name = formData.get("name") as string;
+  const price = parseFloat(formData.get("price") as string);
+  const active = formData.get("active") === "on";
+  const order = parseInt(formData.get("order") as string, 10) || 0;
+
+  await addDeliveryZone({ name, price, active, order });
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  redirect("/admin");
+}
+
+export async function updateDeliveryZoneAction(
+  formData: FormData
+): Promise<{ error?: string }> {
+  await requireAdmin();
+
+  const id = formData.get("id") as string;
+  const name = formData.get("name") as string;
+  const price = parseFloat(formData.get("price") as string);
+  const order = parseInt(formData.get("order") as string, 10) || 0;
+
+  await updateDeliveryZone(id, { name, price, order });
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  redirect("/admin");
+}
+
+export async function toggleDeliveryZoneAction(
+  id: string,
+  value: boolean
+): Promise<void> {
+  await requireAdmin();
+  await updateDeliveryZone(id, { active: value });
+  revalidatePath("/");
+  revalidatePath("/admin");
+}
+
+export async function deleteDeliveryZoneAction(id: string): Promise<void> {
+  await requireAdmin();
+  await deleteDeliveryZone(id);
   revalidatePath("/");
   revalidatePath("/admin");
 }

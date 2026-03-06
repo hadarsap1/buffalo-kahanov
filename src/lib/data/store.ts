@@ -1,4 +1,4 @@
-import type { Product, Category } from "@/types";
+import type { Product, Category, DeliveryZone } from "@/types";
 import { sql } from "@/lib/db/client";
 
 // --- Helpers: snake_case DB <-> camelCase TS ---
@@ -158,6 +158,68 @@ export async function updateProduct(
 export async function deleteProduct(id: string): Promise<boolean> {
   const result = await sql`DELETE FROM products WHERE id = ${id}`;
   return result.length !== undefined ? true : true;
+}
+
+// --- Delivery Zone operations ---
+
+function toDeliveryZone(row: { id: string; name: string; price: number; active: boolean; order: number }): DeliveryZone {
+  return { _id: row.id, name: row.name, price: Number(row.price), active: row.active, order: row.order };
+}
+
+export async function getAllDeliveryZones(): Promise<DeliveryZone[]> {
+  const rows = await sql`SELECT * FROM delivery_zones ORDER BY "order" ASC`;
+  return rows.map((row) => toDeliveryZone(row as unknown as { id: string; name: string; price: number; active: boolean; order: number }));
+}
+
+export async function getActiveDeliveryZones(): Promise<DeliveryZone[]> {
+  const rows = await sql`SELECT * FROM delivery_zones WHERE active = true ORDER BY "order" ASC`;
+  return rows.map((row) => toDeliveryZone(row as unknown as { id: string; name: string; price: number; active: boolean; order: number }));
+}
+
+export async function getDeliveryZoneById(id: string): Promise<DeliveryZone | undefined> {
+  const rows = await sql`SELECT * FROM delivery_zones WHERE id = ${id} LIMIT 1`;
+  if (rows.length === 0) return undefined;
+  return toDeliveryZone(rows[0] as unknown as { id: string; name: string; price: number; active: boolean; order: number });
+}
+
+export async function addDeliveryZone(zone: {
+  name: string;
+  price: number;
+  active: boolean;
+  order: number;
+}): Promise<DeliveryZone> {
+  const maxRows = await sql`SELECT id FROM delivery_zones`;
+  const maxId = maxRows.reduce((max: number, r: Record<string, unknown>) => {
+    const num = parseInt((r.id as string).replace("dz-", ""), 10);
+    return isNaN(num) ? max : Math.max(max, num);
+  }, 0);
+  const newId = `dz-${maxId + 1}`;
+
+  await sql`
+    INSERT INTO delivery_zones (id, name, price, active, "order")
+    VALUES (${newId}, ${zone.name}, ${zone.price}, ${zone.active}, ${zone.order})
+  `;
+  return (await getDeliveryZoneById(newId))!;
+}
+
+export async function updateDeliveryZone(
+  id: string,
+  updates: Partial<{ name: string; price: number; active: boolean; order: number }>
+): Promise<DeliveryZone | null> {
+  await sql`
+    UPDATE delivery_zones SET
+      name = COALESCE(${updates.name ?? null}, name),
+      price = COALESCE(${updates.price ?? null}, price),
+      active = CASE WHEN ${updates.active !== undefined} THEN ${updates.active ?? null} ELSE active END,
+      "order" = COALESCE(${updates.order ?? null}, "order")
+    WHERE id = ${id}
+  `;
+  return (await getDeliveryZoneById(id)) ?? null;
+}
+
+export async function deleteDeliveryZone(id: string): Promise<boolean> {
+  await sql`DELETE FROM delivery_zones WHERE id = ${id}`;
+  return true;
 }
 
 export async function addProduct(product: {
