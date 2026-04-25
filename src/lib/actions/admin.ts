@@ -2,7 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { loginAdmin, logoutAdmin, requireAdmin } from "@/lib/auth/admin";
+import { rateLimit, rateLimitReset } from "@/lib/rate-limit";
 import {
   updateProduct,
   deleteProduct,
@@ -15,13 +17,35 @@ import {
 
 // --- Auth actions ---
 
+const LOGIN_MAX_ATTEMPTS = 10;
+const LOGIN_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+
+async function loginRateKey(): Promise<string> {
+  const h = await headers();
+  // Vercel sets x-forwarded-for with the original client IP first.
+  const fwd = h.get("x-forwarded-for");
+  const ip = fwd ? fwd.split(",")[0].trim() : h.get("x-real-ip") ?? "unknown";
+  return `admin-login:${ip}`;
+}
+
 export async function loginAction(
   _prevState: { error: string },
   formData: FormData
 ): Promise<{ error: string }> {
+  const key = await loginRateKey();
+
+  // Refuse if this IP has already burned through its budget. Use the same
+  // generic message so an attacker can't tell lockout from wrong password.
+  if (rateLimit(key, LOGIN_MAX_ATTEMPTS, LOGIN_WINDOW_MS)) {
+    return { error: "סיסמה שגויה" };
+  }
+
   const password = formData.get("password") as string;
   const success = await loginAdmin(password);
   if (!success) return { error: "סיסמה שגויה" };
+
+  // Successful login — clear the failure counter for this IP.
+  rateLimitReset(key);
   redirect("/admin");
 }
 
